@@ -34,4 +34,11 @@ steps:
     backendAzureRmKey: 'terraform.tfstate'
   name: 'terraforminit'
   displayName: 'Initialize Terrafrom'
-  
+
+
+- task: TerraformTaskV2@2
+  inputs:
+    provider: 'azurerm'
+    command: 'validate'
+  name: 'terraformvalidate'
+  displayName: 'Validate Code'
