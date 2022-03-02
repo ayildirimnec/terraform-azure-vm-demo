@@ -42,3 +42,35 @@ steps:
     command: 'validate'
   name: 'terraformvalidate'
   displayName: 'Validate Code'
+
+
+- task: TerraformTaskV2@2
+  inputs:
+    provider: 'azurerm'
+    command: 'plan'
+    commandOptions: '-input=false -out=$(Build.BinariesDirectory)/tfplan'
+    environmentServiceNameAzureRM: $(backendServiceArm)
+
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(System.DefaultWorkingDirectory)'
+    Contents: '**\*.tf'
+    TargetFolder: '$(Build.BinariesDirectory)'
+
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.BinariesDirectory)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-tfplan.zip'
+    replaceExistingArchive: true
+    verbose: true
+
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-tfplan.zip'
+    artifact: '$(Build.BuildId)-tfplan'
+    publishLocation: 'pipeline'
